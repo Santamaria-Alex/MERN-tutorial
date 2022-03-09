@@ -6,10 +6,20 @@ const dotenv = require("dotenv").config();
 //port we want our server to run on
 const port = process.env.PORT || 5000;
 
+const mode = process.env.NODE_ENV;
+
+//initializing express
+const app = express();
+
+const colors = require("colors");
+
+//Mongo database connection
+const connectDB = require("./config/db");
+//call the function to run
+connectDB();
+
 //error handler
 const { errorHandler } = require("./middleware/errorMiddleware");
-
-const app = express();
 
 //middleware??
 app.use(express.json());

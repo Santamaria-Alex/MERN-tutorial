@@ -1,4 +1,5 @@
-//have to download async handler npm install express-async-handler
+//have to download async handler -- npm install express-async-handler --
+//use async handler so we don't have to write try/catch blocks
 const asyncHandler = require("express-async-handler");
 
 //Get goals
