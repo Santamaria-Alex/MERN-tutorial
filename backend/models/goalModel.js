@@ -4,6 +4,12 @@ const mongoose = require("mongoose");
 //data strucure
 const goalSchema = mongoose.Schema(
   {
+    //the user part allows us to have a goal associaated w a user
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
     text: {
       type: String,
       required: [true, "Please add a text value."],
