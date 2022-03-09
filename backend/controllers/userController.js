@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs"); //npm i bcryptjs
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 
+////////////////////////////////////////////////////////////////
 //@desc Register new user
 //@route POST /api/users
 //@access Public
@@ -41,6 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      token: generateToken(user._id),
     });
   } else {
     res.status(400);
@@ -48,19 +50,45 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+////////////////////////////////////////////////////////////////
 //@desc Authenticate a user
 //@route POST /api/users/login
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
-  res.json({ message: "Login User" });
+  const { email, password } = req.body; //fetch email and pw from request
+
+  //check for user email
+  const user = await User.findOne({ email });
+
+  //compares password input and password registered to user
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid Credentials");
+  }
 });
 
+////////////////////////////////////////////////////////////////
 //@desc Get user data
 //@route GET /api/users/me ---current logged in user "me"
 //@access Public
 const getMe = asyncHandler(async (req, res) => {
   res.json({ message: "User data display" });
 });
+
+//Generate JWT json web token
+//token are used for security
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
 
 module.exports = {
   registerUser,
