@@ -38,6 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     //status 201: good and something was created
+    //this is what we're sending to api
     res.status(201).json({
       _id: user.id,
       name: user.name,
@@ -60,7 +61,9 @@ const loginUser = asyncHandler(async (req, res) => {
   //check for user email
   const user = await User.findOne({ email });
 
+  //compares user input to registered email and
   //compares password input and password registered to user
+  //this is what we send
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({
       _id: user.id,
@@ -77,11 +80,21 @@ const loginUser = asyncHandler(async (req, res) => {
 ////////////////////////////////////////////////////////////////
 //@desc Get user data
 //@route GET /api/users/me ---current logged in user "me"
-//@access Public
+//@access Private
 const getMe = asyncHandler(async (req, res) => {
-  res.json({ message: "User data display" });
+  //User is the user model
+  //have access to user id because we set that in auth middleware
+  const { _id, name, email } = await User.findById(req.user.id);
+
+  //this is what we are sending
+  res.status(200).json({
+    id: _id,
+    name,
+    email,
+  });
 });
 
+////////////////////////////////////////////////////////////////
 //Generate JWT json web token
 //token are used for security
 const generateToken = (id) => {
